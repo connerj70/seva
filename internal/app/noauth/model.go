@@ -4,4 +4,5 @@ package noauth
 type User struct {
 	Email    string
 	Password string
+	JWT      string
 }

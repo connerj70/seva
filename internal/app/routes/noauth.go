@@ -10,4 +10,5 @@ import (
 func RegisterNoAuth() {
 	noauth := app.WireNoAuth()
 	http.HandleFunc("/noauth/register", noauth.Register)
+	http.HandleFunc("/noauth/log_in", noauth.LogIn)
 }
