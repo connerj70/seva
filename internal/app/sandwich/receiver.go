@@ -21,4 +21,12 @@ func (r *Receiver) Post(w http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		fmt.Fprintf(w, err.Error())
 	}
+
+	sandwichBytes, err := json.Marshal(sandwich)
+	if err != nil {
+		fmt.Fprintf(w, err.Error())
+	}
+
+	w.Header().Add("Content-Type", "application/json")
+	w.Write(sandwichBytes)
 }
