@@ -54,3 +54,7 @@ func (mb *MockBusiness) Register(user *User) error {
 	}
 	return nil
 }
+
+func (mb *MockBusiness) LogIn(user *User) (err error) {
+	return nil
+}

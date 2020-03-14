@@ -4,8 +4,10 @@ import (
 	"crypto/sha256"
 	"errors"
 	"fmt"
+	"net/http"
 	"os"
 
+	"github.com/connerj70/seva/internal/cerr"
 	"github.com/dgrijalva/jwt-go"
 )
 
@@ -31,7 +33,12 @@ func (b *Business) Register(user *User) error {
 		return err
 	}
 	if userCheck.Email != "" {
-		return errors.New("a user with this email already exists")
+		ie := &cerr.InternalError{
+			Header: "user verification",
+			Detail: "a user with this email already exists",
+		}
+		ie.SetStatusCode(http.StatusConflict)
+		return ie
 	}
 
 	if user.Password == "" {
@@ -48,7 +55,14 @@ func (b *Business) Register(user *User) error {
 
 	err = b.Service.Register(user)
 	if err != nil {
-		return err
+		var ie *cerr.InternalError
+		if errors.As(err, &ie) {
+			return &cerr.InternalError{
+				Header: fmt.Sprintf("register business %s", ie.Header),
+				Detail: fmt.Sprintf("there was a problem registering the user %s", ie.Detail),
+				Err:    ie.Err,
+			}
+		}
 	}
 
 	return nil
@@ -67,6 +81,9 @@ func (b *Business) LogIn(user *User) (err error) {
 	hash.Write([]byte(user.Password))
 	passwordSum := hash.Sum(nil)
 	passwordHashString := fmt.Sprintf("%x", passwordSum)
+
+	// Remove the password from the returning user struct
+	user.Password = ""
 
 	// Check to see if the passwords match
 	if passwordHashString != verifyUser.Password {

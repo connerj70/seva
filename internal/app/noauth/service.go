@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/connerj70/seva/internal/cerr"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -17,13 +18,16 @@ type Service struct {
 // Register will handle putting the user into our database
 func (s *Service) Register(user *User) error {
 	collection := s.DB.Database("testing").Collection("users")
-	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
-	res, err := collection.InsertOne(ctx, bson.M{"email": user.Email, "password": user.Password})
+	ctx, cancelFunc := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancelFunc()
+	_, err := collection.InsertOne(ctx, bson.M{"email": user.Email, "password": user.Password})
 	if err != nil {
-		return fmt.Errorf("error inserting into collection %s", err.Error())
+		return &cerr.InternalError{
+			Header: "register",
+			Detail: "failed to insert into ñcollection",
+			Err:    err,
+		}
 	}
-	id := res.InsertedID
-	fmt.Println(id)
 	return nil
 }
 
