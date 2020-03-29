@@ -8,6 +8,7 @@ import (
 
 func RegisterSandwich() {
 	sandwich := WireSandwich()
-	mid := &middleware.AuthMiddleware{Next: sandwich.Post}
-	http.Handle("/sandwich", mid)
+	authMid := &middleware.AuthMiddleware{Next: sandwich.Post}
+	cTypeMid := &middleware.ContentTypeMiddleware{authMid.ServeHTTP}
+	http.Handle("/sandwich", cTypeMid)
 }

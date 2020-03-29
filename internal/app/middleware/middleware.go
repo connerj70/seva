@@ -12,6 +12,15 @@ type AuthMiddleware struct {
 	Next http.HandlerFunc
 }
 
+type ContentTypeMiddleware struct {
+	Next http.HandlerFunc
+}
+
+func (c *ContentTypeMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	c.Next(w, r)
+}
+
 func (m *AuthMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// Check if we have a jwt
 	t := r.Header.Get("Authorization")

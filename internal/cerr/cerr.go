@@ -11,20 +11,29 @@ type InternalError struct {
 	statusCode int
 	Header     string
 	Detail     string
-	Err        error `json:",omitempty"`
+	Err        error
 }
 
-func (ie *InternalError) Error() string {
+func NewInternalError(statusCode int, header, detail string, err error) InternalError {
+	return InternalError{
+		statusCode: statusCode,
+		Header:     header,
+		Detail:     detail,
+		Err:        err,
+	}
+}
+
+func (ie InternalError) Error() string {
 	ieBytes, _ := json.Marshal(ie)
 	return string(ieBytes)
 }
 
 // Unwrap will return the inner error
-func (ie *InternalError) Unwrap() error {
+func (ie InternalError) Unwrap() error {
 	return ie.Err
 }
 
-// SetStatusCode will be used to set the status code of the Interal Error struct.
+// SetStatusCode will be used to set the status code of the InternalError struct.
 func (ie *InternalError) SetStatusCode(statusCode int) {
 	ie.statusCode = statusCode
 }

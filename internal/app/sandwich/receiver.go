@@ -24,14 +24,28 @@ func (r *Receiver) Post(w http.ResponseWriter, req *http.Request) {
 	err := json.NewDecoder(req.Body).Decode(sandwich)
 	if err != nil {
 		fmt.Fprintf(w, err.Error())
+		return
+	}
+
+	err = r.Business.Post(sandwich)
+	if err != nil {
+		cErr := cerr.InternalError{}
+		if errors.As(err, &cErr) {
+			cErr.SetWriterStatusCode(w)
+			cErr.Detail = fmt.Sprintf("failed business post: %s", cErr.Detail)
+			w.Write([]byte(cErr.Error()))
+			return
+		}
+		fmt.Fprintf(w, fmt.Sprintf("business failed to post sandwich %s", err))
+		return
 	}
 
 	sandwichBytes, err := json.Marshal(sandwich)
 	if err != nil {
 		fmt.Fprintf(w, err.Error())
+		return
 	}
 
-	w.Header().Add("Content-Type", "application/json")
 	w.Write(sandwichBytes)
 }
 

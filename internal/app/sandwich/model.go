@@ -7,3 +7,14 @@ type Sandwich struct {
 	Bread      string   `json:",omitempty"`
 	Delicious  *bool    `json:",omitempty"`
 }
+
+func (s *Sandwich) isDelicious() bool {
+	if s.Delicious == nil {
+		return false
+	}
+	if *s.Delicious {
+		return true
+	}
+	return false
+}
+
