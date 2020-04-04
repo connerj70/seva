@@ -1,6 +1,8 @@
 package sandwich
 
-import "github.com/connerj70/seva/internal/cerr"
+import (
+	"github.com/connerj70/seva/internal/cerr"
+)
 
 type ServiceAdapter interface{}
 
