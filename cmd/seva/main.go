@@ -48,7 +48,7 @@ func run(log *log.Logger) error {
 
 	// Router
 	router := httprouter.New()
-	handlers.Register(router, db, cfg.API.JWTSecretKey)
+	handlers.Register(router, db, cfg.API.JWTSecretKey, log)
 
 	server := http.Server{
 		Addr:    cfg.API.HostPort,

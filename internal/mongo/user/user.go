@@ -83,6 +83,16 @@ func LogIn(db *mongo.Database, email, password, jwtSecret string) (user seva.Use
 		return user, fmt.Errorf("failed to decode user %w", err)
 	}
 
+	// make sure password matches
+	// Hash the users password
+	h := sha256.New()
+	h.Write([]byte(password))
+	hashedPassword := fmt.Sprintf("%x", h.Sum(nil))
+
+	if hashedPassword != user.Password {
+		return user, fmt.Errorf("passwords do not match")
+	}
+
 	oneWeekInFuture := time.Now().AddDate(0, 0, 7).UTC().Unix()
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, &jwt.StandardClaims{
@@ -95,6 +105,7 @@ func LogIn(db *mongo.Database, email, password, jwtSecret string) (user seva.Use
 	}
 
 	user.JWT = tokenString
+	user.Password = ""
 
 	return user, nil
 }

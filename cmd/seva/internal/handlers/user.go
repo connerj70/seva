@@ -73,11 +73,13 @@ func (u *User) LogIn(w http.ResponseWriter, r *http.Request, _ httprouter.Params
 	userWithJWT, err := user.LogIn(u.DB, getUser.Email, getUser.Password, u.JWTSecretKey)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("failed to log user in %s", err), 500)
+		return
 	}
 
 	userWithJWTJSON, err := json.Marshal(userWithJWT)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("failed to marshal return user %s", err), 500)
+		return
 	}
 
 	w.WriteHeader(200)

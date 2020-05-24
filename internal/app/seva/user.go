@@ -11,7 +11,7 @@ type User struct {
 	FirstName string `json:"firstName" bson:"firstName"`
 	LastName  string `json:"lastName" bson:"lastName"`
 	Email     string `json:"email" bson:"email"`
-	Password  string `json:"-" bson:"password"`
+	Password  string `json:"password,omitempty" bson:"password"`
 	JWT       string `json:"jwt,omitempty"`
 }
 
