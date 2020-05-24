@@ -1,0 +1,14 @@
+version: "3"
+services:
+    seva:
+        build: .
+        ports:
+            - "8080:8080"
+        environment:
+            - MONGO_CONNECTION_STRING=${MONGO_CONNECTION_STRING}
+            - HOST_PORT=${HOST_PORT}
+            - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+            - DB_ENV=${DB_ENV}
+        volumes:
+            - ./internal:/go/src/seva/internal
+            - ./cmd:/go/src/seva/cmd
