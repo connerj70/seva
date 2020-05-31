@@ -7,6 +7,7 @@ import (
 
 	"github.com/connerj70/seva/internal/app/seva"
 	"github.com/connerj70/seva/internal/mongo/user"
+	"github.com/connerj70/seva/internal/web"
 	"github.com/julienschmidt/httprouter"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -32,9 +33,7 @@ func (u *User) Retrieve(w http.ResponseWriter, r *http.Request, params httproute
 		return
 	}
 
-	w.Header().Add("content-type", "application/json")
-	w.WriteHeader(200)
-	w.Write(userJSON)
+	web.SuccessResponse(w, userJSON)
 	return
 }
 
@@ -55,10 +54,26 @@ func (u *User) Create(w http.ResponseWriter, r *http.Request, _ httprouter.Param
 		return
 	}
 
-	w.WriteHeader(200)
-	w.Header().Add("Content-Type", "application/json")
-	w.Write([]byte(fmt.Sprintf(`{"id": %q}`, userID)))
+	responseBytes := []byte(fmt.Sprintf(`{"id": %q}`, userID))
+	web.SuccessResponse(w, responseBytes)
+	return
+}
 
+func (u *User) Update(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	var updateUser seva.User
+	err := json.NewDecoder(r.Body).Decode(&updateUser)
+	if err != nil {
+		http.Error(w, "failed to decode body", 500)
+		return
+	}
+
+	err = user.Update(u.DB, updateUser)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("failed to update user: %s", err), 500)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
 	return
 }
 
@@ -82,8 +97,6 @@ func (u *User) LogIn(w http.ResponseWriter, r *http.Request, _ httprouter.Params
 		return
 	}
 
-	w.WriteHeader(200)
-	w.Header().Add("Content-Type", "application/json")
-	w.Write(userWithJWTJSON)
+	web.SuccessResponse(w, userWithJWTJSON)
 	return
 }

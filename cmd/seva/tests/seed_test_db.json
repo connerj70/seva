@@ -1,0 +1,12 @@
+{
+    "user": {
+        "documents": [
+            {
+                "_id": "5ecab985288a64faaa7742fc",
+                "firstName": "conner",
+                "lastName": "jensen",
+                "email": "conner@gmail.com"
+            }
+        ]
+    }
+}

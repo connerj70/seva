@@ -18,6 +18,7 @@ func Register(router *httprouter.Router, db *mongo.Database, jwtSecretKey string
 	user := User{DB: db, JWTSecretKey: jwtSecretKey}
 	router.GET("/user/:id", middleware.Log(log, middleware.Authenticate(user.Retrieve, jwtSecretKey)))
 	router.POST("/user", middleware.Log(log, user.Create))
+	router.PUT("/user", middleware.Log(log, middleware.Authenticate(user.Update, jwtSecretKey)))
 	router.POST("/user/log_in", middleware.Log(log, user.LogIn))
 }
 
