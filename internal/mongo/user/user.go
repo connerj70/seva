@@ -28,6 +28,9 @@ func Retrieve(db *mongo.Database, userID string) (user seva.User, err error) {
 		return user, err
 	}
 
+	// Don't return the hashed password
+	user.Password = ""
+
 	return user, err
 }
 
@@ -67,6 +70,41 @@ func Create(db *mongo.Database, newUser seva.NewUser) (userID string, err error)
 	id := insertResult.InsertedID.(primitive.ObjectID)
 
 	return id.Hex(), nil
+}
+
+func Update(db *mongo.Database, user seva.User) error {
+
+	if user.Password != "" {
+		return fmt.Errorf("cannot update user password")
+	}
+
+	if user.Email != "" {
+		return fmt.Errorf("cannot update user email")
+	}
+
+	userCollection := db.Collection("user")
+
+	objectID, err := primitive.ObjectIDFromHex(user.ID)
+	if err != nil {
+		return fmt.Errorf("failed to convert to ObjectID %w", err)
+	}
+
+	// Set the fields we don't want to update to empty
+	user.ID = ""
+	user.Password = ""
+	user.Email = ""
+	user.JWT = ""
+	updateCommand := bson.M{"$set": user}
+
+	userFilter := bson.D{{"_id", objectID}}
+	updateResult, err := userCollection.UpdateOne(context.Background(), userFilter, updateCommand)
+	if err != nil {
+		return fmt.Errorf("failed to update user %w", err)
+	}
+
+	fmt.Println(updateResult)
+
+	return nil
 }
 
 func LogIn(db *mongo.Database, email, password, jwtSecret string) (user seva.User, err error) {

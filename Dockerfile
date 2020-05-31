@@ -1,10 +1,6 @@
 FROM golang:1.14 AS builder
 WORKDIR /go/src/seva
 EXPOSE 8080
-COPY go.mod .
-COPY go.sum .
-
-RUN go mod download
 
 COPY . .
 
