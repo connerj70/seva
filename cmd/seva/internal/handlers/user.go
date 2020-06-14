@@ -7,7 +7,7 @@ import (
 
 	"github.com/connerj70/seva/internal/app/seva"
 	"github.com/connerj70/seva/internal/mongo/user"
-	"github.com/connerj70/seva/internal/web"
+	"github.com/connerj70/seva/internal/platform/web"
 	"github.com/julienschmidt/httprouter"
 	"go.mongodb.org/mongo-driver/mongo"
 )

@@ -7,6 +7,7 @@ import (
 	_ "net/http/pprof"
 	"os"
 
+	"github.com/ardanlabs/conf"
 	"github.com/connerj70/seva/cmd/seva/internal/handlers"
 	"github.com/connerj70/seva/internal/mongo"
 	"github.com/julienschmidt/httprouter"
@@ -25,19 +26,26 @@ func run(log *log.Logger) error {
 	// Setup config
 	var cfg struct {
 		API struct {
-			HostPort     string
-			JWTSecretKey string
+			HostPort     string `conf:"default:0.0.0.0:8080"`
+			JWTSecretKey string `conf:"default:aaa,noprint"`
 		}
 		DB struct {
-			ConnectionString string
-			ENV              string
+			ConnectionString string `conf:"default:mongodb+srv://prod-machine:JxgnpPEQuNFTJxel@cluster0-bwnad.mongodb.net/dev?retryWrites=true&w=majority"`
+			ENV              string `conf:"default:dev"`
 		}
 	}
-	cfg.API.HostPort = os.Getenv("HOST_PORT")
-	cfg.API.JWTSecretKey = os.Getenv("JWT_SECRET_KEY")
-	cfg.DB.ENV = os.Getenv("DB_ENV")
-	cfg.DB.ConnectionString = os.Getenv("MONGO_CONNECTION_STRING")
-	log.Printf("Config: %v", cfg)
+
+	if err := conf.Parse(os.Args[1:], "SEVA", &cfg); err != nil {
+		if err == conf.ErrHelpWanted {
+			usage, err := conf.Usage("SEVA", &cfg)
+			if err != nil {
+				return fmt.Errorf("generating config usage %w", err)
+			}
+			fmt.Println(usage)
+			return nil
+		}
+		return fmt.Errorf("parsing config %w", err)
+	}
 
 	// Open connection to database
 	client, err := mongo.Open(cfg.DB.ConnectionString)

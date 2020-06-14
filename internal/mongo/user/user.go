@@ -112,7 +112,7 @@ func LogIn(db *mongo.Database, email, password, jwtSecret string) (user seva.Use
 	// Get the user
 	userFilter := bson.D{{"email", email}}
 	result := userCollection.FindOne(context.Background(), userFilter)
-	if result.Err() != nil {
+	if err := result.Err(); err != nil {
 		return user, fmt.Errorf("failed to retrieve user %w", err)
 	}
 

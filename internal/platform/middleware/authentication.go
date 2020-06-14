@@ -16,7 +16,6 @@ func Authenticate(handler httprouter.Handle, jwtSecretKey string) httprouter.Han
 			http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
 			return
 		}
-
 		// Parse the jwt
 		_, err := jwt.Parse(jwtString, func(token *jwt.Token) (interface{}, error) {
 			// Don't forget to validate the alg is what you expect:

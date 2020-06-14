@@ -4,7 +4,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/connerj70/seva/internal/middleware"
+	"github.com/connerj70/seva/internal/platform/middleware"
 	"github.com/julienschmidt/httprouter"
 	"go.mongodb.org/mongo-driver/mongo"
 )
